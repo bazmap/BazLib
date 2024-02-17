@@ -3,7 +3,6 @@
 """ Gestion des requêtes HTTP
 v1.0
 Interface de requêtage HTTP via le module requests
-Préparamétrages du module logging pour faciliter la mise en place de logs dans une application
 
 Classes
 -------
@@ -262,6 +261,7 @@ class baz_requests():
 		method: str = None, 
 		url: str = None, 
 		request_data: dict = None, 
+		request_data_json: str = None,
 		request_timeout: int = None, 
 		request_headers: dict = None, 
 		request_auth: dict = None, 
@@ -285,6 +285,8 @@ class baz_requests():
 				URL de contact.
 			request_data: dictionnary
 				Données à transmettre au serveur.
+			request_data_json: str
+				Données à transmettre au serveur au format json.
 			request_timeout: integer
 				Délai maximum d'attente des réponses serveur
 				None pour attente illimitée (valeur par défaut).
@@ -330,6 +332,7 @@ class baz_requests():
 				method = method, 
 				url = url, 
 				request_data = request_data,
+				request_data_json = request_data_json,
 				response_format = response_format,
 				force_token_renew = force_token_renew
 			)
@@ -339,6 +342,7 @@ class baz_requests():
 				method = method, 
 				url = url, 
 				request_data = request_data, 
+				request_data_json = request_data_json,
 				request_timeout = request_timeout, 
 				request_headers = request_headers, 
 				request_auth = request_auth, 
@@ -360,6 +364,7 @@ class baz_requests():
 		method: str = "GET", 
 		url: str = None, 
 		request_data: dict = None, 
+		request_data_json: str = None,
 		request_timeout: int = None, 
 		request_headers: dict = None, 
 		request_auth: dict = None, 
@@ -380,6 +385,8 @@ class baz_requests():
 				URL de contact.
 			request_data: dictionnary
 				Données à transmettre au serveur.
+			request_data_json: str
+				Données à transmettre au serveur au format json.
 			request_timeout: integer
 				Délai maximum d'attente des réponses serveur
 				None pour attente illimitée (valeur par défaut).
@@ -432,6 +439,7 @@ class baz_requests():
 				method= method,
 				url= url, 
 				data=request_data,
+				json=request_data_json,
 				timeout=request_timeout,
 				headers=request_headers, 
 				auth=request_auth,
@@ -554,6 +562,7 @@ class baz_requests():
 					method= method, 
 					url= url, 
 					request_data= request_data, 
+					request_data_json= request_data_json, 
 					request_timeout= request_timeout, 
 					request_headers= request_headers, 
 					request_auth= request_auth, 
@@ -575,6 +584,7 @@ class baz_requests():
 					method= method, 
 					url= url, 
 					request_data= request_data, 
+					request_data_json= request_data_json, 
 					request_timeout= request_timeout, 
 					request_headers= request_headers, 
 					request_auth= request_auth, 
@@ -593,6 +603,7 @@ class baz_requests():
 		method: str = "GET", 
 		url: str = None, 
 		request_data: dict = None,
+		request_data_json: str = None,
 		response_format: str = 'json',
 		force_token_renew: bool = False,
 		iteration: int = 1
@@ -609,6 +620,8 @@ class baz_requests():
 				URL de contact de l'API.
 			request_data: dictionnary
 				Données à transmettre au serveur.
+			request_data_json: str
+				Données à transmettre au serveur au format json.
 			response_format: string
 				Formatage de la réponse.
 			force_token_renew: boolean
@@ -646,6 +659,7 @@ class baz_requests():
 			method= method,
 			url= url,
 			request_data= request_data,
+			request_data_json= request_data_json,
 			request_timeout= self.param_request_timeout,
 			request_headers= self.request_headers,
 			response_format= response_format,
