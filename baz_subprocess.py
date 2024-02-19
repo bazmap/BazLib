@@ -25,6 +25,7 @@ import logging
 import os
 import queue
 import subprocess
+import sys
 import threading
 
 
@@ -80,8 +81,9 @@ class baz_subprocess():
 	# Méthode de lancement d'un sous processus
 	def popen(
 		self,
-		args, 
-		env_var_perso
+		args: list, 
+		env_var_perso: dict = None,
+		out_encoding: str = None
 	):
 		"""
 			Lancement d'un sous processus.
@@ -93,6 +95,9 @@ class baz_subprocess():
 			env_var_perso: dict
 				Tableau de variables à ajouter aux variables d'environnement.
 				Ce tableau surcharge les variables d'environnement.
+			out_encoding: str
+				Encodage de la sortie standard et de la sortie d'erreur.
+				Par défaut utf-8
 
 			Returns
 			-------
@@ -100,57 +105,72 @@ class baz_subprocess():
 				Renvoie "True" lorsque le processus a terminé son execution et "False" s'il y a eu une erreur.
 		"""
 
+		# Récupération et vérification des paramètres
+		out_encoding = out_encoding if out_encoding is not None else sys.stdout.encoding
+
+
+
 		# Récupérer les variables d'environnement actuelles
 		var_env = dict(os.environ)
 
 		# Modifier la valeur de la variable d'environnement spécifique
-		var_env.update(env_var_perso)
+		if env_var_perso:
+			var_env.update(env_var_perso)
+
+
 
 		# Démarrage du sous processus
-		process = subprocess.Popen(
-			args,
-			bufsize=-1,
-			stdin=subprocess.PIPE,
-			stdout=subprocess.PIPE,
-			stderr=subprocess.PIPE,
-			shell=False,
-			env=var_env
-		)
+		try:
+			process = subprocess.Popen(
+				args,
+				bufsize=-1,
+				stdin=subprocess.PIPE,
+				stdout=subprocess.PIPE,
+				stderr=subprocess.PIPE,
+				shell=False,
+				env=var_env
+			)
 
-		# Création des threads de lecture des sorties
-		p_stdout = baz_streamreader(process.stdout)
-		p_stderr = baz_streamreader(process.stderr)
+			# Création des threads de lecture des sorties
+			p_stdout = baz_streamreader(process.stdout)
+			p_stderr = baz_streamreader(process.stderr)
 
-		# Ecriture des sorties
-		while True:
+			# Ecriture des sorties
+			while True:
 
-			# Récupération des données toutes les 0.1s
-			output_stdout = p_stdout.readline()
-			output_stderr = p_stderr.readline()
+				# Récupération des données
+				output_stdout = p_stdout.readline()
+				output_stderr = p_stderr.readline()
 
-			# Sortie des données
-			if output_stdout:
-				getattr(self.logger, self.stdout_level)(output_stdout.decode('utf-8').strip())
-			if output_stderr:
-				getattr(self.logger, self.stderr_level)(output_stderr.decode('utf-8').strip())
+				# Sortie des données
+				if output_stdout:
+					getattr(self.logger, self.stdout_level)(output_stdout.decode(out_encoding).strip())
+				if output_stderr:
+					getattr(self.logger, self.stderr_level)(output_stderr.decode(out_encoding).strip())
 
-			# Si le process est terminé : on stoppe la boucle
-			return_code = process.poll()
-			if (
-				return_code != None
-				and not output_stdout 
-				and not output_stderr 
-			):
-				break
+				# Si le process est terminé : on stoppe la boucle
+				return_code = process.poll()
+				if (
+					return_code != None
+					and not output_stdout 
+					and not output_stderr 
+				):
+					break
 
-		# Renvoie d'une information selon le code d'erreur de sortie
-		if return_code == 0:
-			getattr(self.logger, self.stdout_level)("Le processus s'est terminé avec succès.")
-			return True
+			# Renvoie de True si le processus s'est terminé correctement
+			if return_code == 0:
+				getattr(self.logger, self.stdout_level)("Le processus s'est terminé avec succès.")
+				return True
+
+		# Si une erreur survient, on affiche les information sur l'erreur
+		except Exception as inst:
+			self.logger.error(inst)
+			self.logger.error("La commande était : " + (' '.join(map(str, args))) )
+
+		# Dans tous les cas, on renvoi False
 		else:
 			getattr(self.logger, self.stderr_level)("Le processus s'est terminé avec une erreur.")
 			return False
-
 
 
 
