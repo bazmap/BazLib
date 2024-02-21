@@ -144,9 +144,13 @@ class baz_subprocess():
 
 				# Sortie des données
 				if output_stdout:
-					getattr(self.logger, self.stdout_level)(output_stdout.decode(out_encoding).strip())
+					getattr(self.logger, self.stdout_level)(
+						self.try_decode(output_stdout).strip()
+					)
 				if output_stderr:
-					getattr(self.logger, self.stderr_level)(output_stderr.decode(out_encoding).strip())
+					getattr(self.logger, self.stderr_level)(
+						self.try_decode(output_stderr).strip()
+					)
 
 				# Si le process est terminé : on stoppe la boucle
 				return_code = process.poll()
@@ -171,6 +175,59 @@ class baz_subprocess():
 		else:
 			getattr(self.logger, self.stderr_level)("Le processus s'est terminé avec une erreur.")
 			return False
+
+	def try_decode(
+		self,
+		byte,
+		encoding: list = None,
+	):
+		"""
+			Lancement d'un sous processus.
+
+			Parameters
+			----------
+			byte: byte
+				Données binaire à décoder.
+			codecs: dict
+				Liste d'encodages à tester.
+
+			Returns
+			-------
+			boolean
+				Renvoie "True" lorsque le processus a terminé son execution et "False" s'il y a eu une erreur.
+		"""
+
+		# Récupération et vérification des paramètres
+		encoding = encoding if encoding is not None else [
+			sys.stdout.encoding,
+			'utf8',
+			'cp1252',
+			'latin_1',
+			'cp1251',
+			'cp1250',
+			'cp1256',
+			'euc_kr',
+			'euc_jp',
+			'GB2312',
+			'utf16',
+			'utf32'
+		]
+
+		return_value = ''
+		error_value = None
+
+		for i in encoding:
+			try:
+				return_value = byte.decode(i)
+				error_value = None
+				break
+			except UnicodeDecodeError:
+				error_value = True
+
+		if error_value is not None:
+			self.logger.warning('Valeur non décodée')
+	
+		return return_value
 
 
 

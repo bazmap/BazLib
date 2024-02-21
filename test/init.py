@@ -113,8 +113,7 @@ subprocess_result = main_subprocess.popen(
 		"/c", 
 		"dir",
 		parent_dir
-	],
-	out_encoding= 'cp1252'
+	]
 )
 
 if subprocess_result:
