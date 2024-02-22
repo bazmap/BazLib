@@ -226,7 +226,7 @@ class baz_subprocess():
 
 		if error_value is not None:
 			self.logger.warning('Valeur non décodée')
-	
+
 		return return_value
 
 
