@@ -18,9 +18,11 @@ sys.path.append(parent_dir)
 
 # Import des modules requis
 import baz_logger
+from baz_config import baz_config
 from baz_requests import baz_requests
 from baz_psycopg import baz_psycopg
 from baz_subprocess import baz_subprocess
+import baz_util
 
 
 
@@ -38,6 +40,32 @@ main_logger = baz_logger.createLogger(
 main_logger.info("Appli de test")
 main_logger.info('Test des éléments de BazLib')
 main_logger.warning('Test logger')
+
+
+
+
+
+# Config
+main_config = baz_config(
+	logger= main_logger,
+	software_info= {
+		"name": "test",
+		"version": "0.1",
+		"resume": "Programme de test",
+		"author" : "Arthur Bazin",
+		"copyright": "2024"
+	},
+	load_arg= True,
+	load_config_file= True
+)
+
+main_logger.info(baz_util.pretty_dict(main_config.var_default))
+main_logger.info('')
+main_logger.info(baz_util.pretty_dict(main_config.var_config_file))
+main_logger.info('')
+main_logger.info(baz_util.pretty_dict(main_config.var_arg))
+main_logger.info('')
+main_logger.info(baz_util.pretty_dict(main_config.var_global))
 
 
 
@@ -120,3 +148,6 @@ if subprocess_result:
 	main_logger.info("Processus terminé sans erreurs")
 else:
 	main_logger.info("Processus terminé avec erreurs")
+
+
+
