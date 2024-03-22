@@ -260,6 +260,7 @@ class baz_requests():
 		self, 
 		method: str = None, 
 		url: str = None, 
+		request_params: dict = None,
 		request_data: dict = None, 
 		request_data_json: str = None,
 		request_timeout: int = None, 
@@ -283,6 +284,8 @@ class baz_requests():
 				'oauth2' : requête http avec utilisation de l'authentification OAuth2
 			url: string
 				URL de contact.
+			request_params: dictionnary
+				Données à transmettre au serveur via paramètres.
 			request_data: dictionnary
 				Données à transmettre au serveur.
 			request_data_json: str
@@ -331,6 +334,7 @@ class baz_requests():
 			return self.request_oauth2(
 				method = method, 
 				url = url, 
+				request_params = request_params,
 				request_data = request_data,
 				request_data_json = request_data_json,
 				response_format = response_format,
@@ -341,6 +345,7 @@ class baz_requests():
 			return self.request_simple(
 				method = method, 
 				url = url, 
+				request_params = request_params,
 				request_data = request_data, 
 				request_data_json = request_data_json,
 				request_timeout = request_timeout, 
@@ -363,6 +368,7 @@ class baz_requests():
 		self, 
 		method: str = "GET", 
 		url: str = None, 
+		request_params: dict = None,
 		request_data: dict = None, 
 		request_data_json: str = None,
 		request_timeout: int = None, 
@@ -383,6 +389,8 @@ class baz_requests():
 				Méthode de contact.
 			url: string
 				URL de contact.
+			request_params: dictionnary
+				Données à transmettre au serveur via paramètres.
 			request_data: dictionnary
 				Données à transmettre au serveur.
 			request_data_json: str
@@ -438,6 +446,7 @@ class baz_requests():
 			request_response = requests.request(
 				method= method,
 				url= url, 
+				params=request_params,
 				data=request_data,
 				json=request_data_json,
 				timeout=request_timeout,
